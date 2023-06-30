@@ -1,13 +1,12 @@
 <template>
     <div>
         <div class="">
-            <audio ref="audio" src="/song/y2mate.com - UtaMacross Mirai wa Onna no Tame ni Aru Full Song  4K60fps.mp3"
-                controls></audio>
-            <audio ref="audio2" src="/song/y2mate.com - UtaMacross Mirai wa Onna no Tame ni Aru Full Song  4K60fps.mp3"
-                controls></audio>
-            <div class="btn btn-primary" @click="load()">load nè</div>
-            <div class="btn btn-outline" @click="stop = false">stop</div>
-            <canvas class=" " ref="canvas" />
+            <audio hidden autoplay="true" @loadedMetaData="loadding = true" ref="audio" :src="song" controls></audio>
+            <audio hidden autoplay="true" ref="audio2" :src="song" controls></audio>
+            <div class="btn btn-secondary" @click="changeSong()">chuyển bài</div>
+            <div :disabled="loadding" class="btn btn-primary" @click="load()">load nè</div>
+            <div class="btn btn-outline" @click="stop()">stop</div>
+            <canvas class=" p-20" ref="canvas" />
         </div>
     </div>
 </template>
@@ -15,9 +14,31 @@
 const canvas = ref();
 const audio = ref();
 const audio2 = ref();
-const stop = ref(false);
+const list = ref([
+    '/song/TimeToAttackJormungandOST-TakuIwa_4jbr2 (4).mp3',
+    '/song/thuyền quyên (12).mp3',
+    '/song/y2mate.com - Thuyền Quyên AM Remix  Diệu Kiên  Áo Mời Em Cài Màu Hoa Cưới Remix Hot TikTok.mp3',
+    '/song/y2mate.com - UtaMacross Mirai wa Onna no Tame ni Aru Full Song  4K60fps.mp3',
+])
+
+const loadding = ref(false)
+
+function changeSong() {
+    loadding.value = false
+    const random = Math.random() * 10
+    const index = ~~(random % 4)
+    song.value = list.value[index]
+    audio2.value.play();
+    audio.value.play();
+}
+
+const song = ref(list.value[0])
+function stop() {
+    audio2.value.pause();
+    audio.value.pause();
+}
 function load() {
-    stop.value = true;
+    loadding.value = false
     audio2.value.play();
     audio.value.play();
     const ctx = canvas.value.getContext("2d");
@@ -60,46 +81,6 @@ function load() {
         }
     }
 
-    // class Bar {
-    //     constructor(x, y, width, height, color, index) {
-    //         this.x = x;
-    //         this.y = y;
-    //         this.width = width;
-    //         this.height = height;
-    //         this.color = color;
-    //         this.index = index;
-    //     }
-    //     update(micInput) {
-    //         const sound = micInput * 500 || 500;
-    //         this.x++;
-    //         if (sound > this.height) {
-    //             this.height = sound;
-    //         } else {
-    //             this.height -= this.height * 0.03;
-    //         }
-    //     }
-    //     draw(context, volume) {
-    //         // context.fillStyle = this.color;
-    //         // context.fillRect(this.x, this.y, this.width, this.height);
-
-    //         context.strokeStyle = this.color;
-    //         context.lineWidth = this.width;
-    //         context.save();
-    //         context.rotate(this.index * 0.05);
-    //         context.beginPath();
-    //         context.bezierCurveTo(
-    //             this.x / 2,
-    //             this.y / 2,
-    //             this.height * -0.5 - 150,
-    //             this.height + 50,
-    //             this.x,
-    //             this.y
-    //         );
-    //         context.stroke();
-
-    //         context.restore();
-    //     }
-    // }
     class Bar {
         constructor(x, y, width, height, color, index) {
             this.x = x;
@@ -108,58 +89,56 @@ function load() {
             this.height = height;
             this.color = color;
             this.index = index;
-            this.angle = 0; // Góc quay của vỏ ốc sên
         }
-
         update(micInput) {
-            const sound = micInput * 500 || 500;
-            this.x++;
+            const sound = micInput * 200 || 200;
             if (sound > this.height) {
                 this.height = sound;
             } else {
                 this.height -= this.height * 0.03;
             }
-
-            this.angle += 0.05; // Tăng góc quay sau mỗi lần cập nhật
         }
-
         draw(context, volume) {
-            context.strokeStyle = this.color;
-            context.lineWidth = this.width;
-            context.save();
-            context.translate(this.x, this.y); // Di chuyển tâm vẽ đến vị trí (this.x, this.y)
+            context.fillStyle = this.color;
+            context.fillRect(this.x, this.y, this.width, this.height);
 
-            const numArms = 5; // Số cánh của vỏ ốc sên
-            const armLength = this.height / 2; // Độ dài của từng cánh
+            // context.strokeStyle = this.color;
+            // context.lineWidth = this.width;
+            // context.save();
+            // context.translate(canvas.value.width / 3, canvas.value.height / 3);
 
-            context.beginPath();
+            // context.rotate(this.index * 0.043);
 
-            for (let i = 0; i < 360 * numArms; i++) {
-                const angle = i * (Math.PI / 180);
-                const radius = armLength + (angle / (Math.PI * 2)) * this.height;
-                const x = radius * Math.cos(angle + this.angle);
-                const y = radius * Math.sin(angle + this.angle);
 
-                if (i === 0) {
-                    context.moveTo(x, y);
-                } else {
-                    context.lineTo(x, y);
-                }
-            }
+            // context.beginPath();
+            // context.bezierCurveTo(
+            //     this.x / 2, this.y / 2, this.height * -0.5 - 150, this.height + 50, this.x, this.y
+            // );
+            // context.stroke();
 
-            context.stroke();
-            context.restore();
+            // // if (this.index > 150) {
+            // //     context.beginPath()
+            // //     context.arc(this.x, this.y, this.height / 2 + this.height * 0.1, this.height * 0.05, 0, Math.PI * 2)
+            // //     context.stroke()
+            // //     context.beginPath()
+            // //     context.moveTo(this.x, this.y + 10);
+            // //     context.lineTo(this.x, this.y + 10, this.height / 2)
+            // //     context.stroke()
+            // // }
+            // context.restore();
+
         }
     }
 
-    let fftSize = 512;
+
+    let fftSize = 1024;
     const source = new Source(fftSize);
     let bars = [];
     let barWidth = canvas.value.width / fftSize;
     function createBars() {
-        for (let i = 0; i < fftSize / 2; i++) {
-            let color = `hsl(${i * 2}, 100%, 50%)`;
-            bars.push(new Bar(0, i * 0.9, 1, 50, color, 1));
+        for (let i = 5; i < fftSize / 4; i++) {
+            let color = `hsl(${i}, 100%, 50%)`;
+            bars.push(new Bar(i * 2, 0, 1, 512, color, i));
         }
     }
     createBars();
@@ -169,7 +148,6 @@ function load() {
         const samples = source.getSamples();
         const volume = source.getVolume();
         ctx.save();
-        ctx.translate(canvas.value.width / 2 - 70, canvas.value.height / 2 + 50);
 
         bars.forEach((bar, i) => {
             bar.update(samples[i]);
