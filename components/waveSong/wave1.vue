@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="">
-            <audio hidden autoplay="true" @loadedMetaData="loadding = true" ref="audio" :src="song" controls></audio>
-            <audio hidden autoplay="true" ref="audio2" :src="song" controls></audio>
+            <audio loop="true" hidden autoplay="true" @loadedMetaData="loadding = true" ref="audio" :src="song" controls></audio>
+            <audio loop="true" hidden autoplay="true" ref="audio2" :src="song" controls></audio>
             <div class="btn btn-secondary" @click="changeSong()">chuyển bài</div>
             <div :disabled="loadding" class="btn btn-primary" @click="load()">load nè</div>
             <div class="btn btn-outline" @click="stop()">stop</div>
