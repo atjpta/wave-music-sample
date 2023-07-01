@@ -2,23 +2,9 @@
   <div>
     <div class="overflow-hidden">
       <div>
-        <audio
-          loop="true"
-          hidden
-          autoplay="true"
-          @loadedMetaData="loading = true"
-          ref="audio"
-          :src="song"
-          controls
-        ></audio>
-        <audio
-          loop="true"
-          hidden
-          autoplay="true"
-          ref="audio2"
-          :src="song"
-          controls
-        ></audio>
+        <audio loop="true" hidden autoplay="true" @loadedMetaData="loading = true" ref="audio" :src="song"
+          controls></audio>
+        <audio loop="true" hidden autoplay="true" ref="audio2" :src="song" controls></audio>
         <div class="btn btn-secondary" @click="changeSong()">chuyển bài</div>
         <div :disabled="loading" class="btn btn-primary" @click="load()">load nè</div>
         <div class="btn btn-outline" @click="stop()">stop</div>
@@ -27,13 +13,7 @@
         <div class="flex justify-center items-center relative">
           <!-- <span class="indicator-item indicator-center indicator-middle"> -->
           <div class="z-20 absolute">
-            <img
-              hidden
-              ref="image"
-              class="rounded-full w-32 h-32"
-              src="image/girl.jpeg"
-              alt=""
-            />
+            <img hidden ref="image" class="rounded-full w-32 h-32" src="/image/girl.jpeg" alt="" />
           </div>
           <!-- </span> -->
           <div class="" id="imageSpin">
