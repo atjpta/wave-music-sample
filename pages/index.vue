@@ -1,9 +1,7 @@
 <template>
-    <div>
-              
-
-        <WaveSongWave1 />
-    </div>
+  <div>
+    <WaveSongWave2 />
+  </div>
 </template>
 
 <script setup></script>

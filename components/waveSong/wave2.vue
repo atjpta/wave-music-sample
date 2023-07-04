@@ -4,26 +4,17 @@
       <div>
         <audio
           loop="true"
-          hidden
-          autoplay="true"
           @loadedMetaData="loading = true"
           ref="audio"
           :src="song"
           controls
         ></audio>
-        <audio
-          loop="true"
-          hidden
-          autoplay="true"
-          ref="audio2"
-          :src="song"
-          controls
-        ></audio>
+        <audio loop="true" ref="audio2" :src="song" controls></audio>
         <div class="btn btn-secondary" @click="changeSong()">chuyển bài</div>
         <div :disabled="loading" class="btn btn-primary" @click="load()">load nè</div>
         <div class="btn btn-outline" @click="stop()">stop</div>
       </div>
-      <div class="">
+      <div class="sm:scale-100 scale-50">
         <div class="flex justify-center items-center relative">
           <!-- <span class="indicator-item indicator-center indicator-middle"> -->
           <div class="z-20 absolute">
@@ -76,8 +67,8 @@ function stop() {
 function load() {
   loading.value = false;
   image.value.hidden = false;
-  audio2.value.play();
-  audio.value.play();
+  // audio2.value.play();
+  // audio.value.play();
   const ctx = canvas.value.getContext("2d");
   canvas.value.width = window.innerWidth - 50;
   canvas.value.height = window.innerHeight - 50;
@@ -86,21 +77,34 @@ function load() {
   class Source {
     constructor(fftSize) {
       this.initialized = false;
-      window.AudioContext = window.AudioContext || window.webkitURL.AudioContext;
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
       this.audioContext = new window.AudioContext();
       this.analyser = this.audioContext.createAnalyser();
-      try {
-        this.source = this.audioContext.createMediaElementSource(audio.value);
-      } catch (error) {
-        console.log(error);
-      }
-
-      // console.log(this.analyser);
       this.analyser.fftSize = fftSize;
       const bufferLength = this.analyser.frequencyBinCount;
       this.dataArray = new Uint8Array(bufferLength);
-      this.source.connect(this.analyser);
-      this.initialized = true;
+
+      // Lấy thông tin loa máy tính
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const systemAudio = devices.find((device) => device.kind === "audiooutput");
+          console.log(systemAudio);
+          return navigator.mediaDevices.getUserMedia({
+            audio: {
+              deviceId: systemAudio.deviceId,
+              echoCancellation: false, // Tắt chế độ hủy tiếng vọng
+            },
+          });
+        })
+        .then((stream) => {
+          this.source = this.audioContext.createMediaStreamSource(stream);
+          this.source.connect(this.analyser);
+          this.initialized = true;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
     getSamples() {
       this.analyser.getByteFrequencyData(this.dataArray);
